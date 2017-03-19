@@ -17,12 +17,11 @@ import Data.Traversable
 import Control.Applicative
 
 class Traversable t => CTraversable t where
-  data Builder t a :: *
-  traversalL :: Traversable t => ((Maybe b -> Builder t b -> Builder t b)
-                                  -> Maybe a -> mtb -> mtb)
-                                -> ((Builder t b -> t b) -> mtb -> m (t b))
-                                -> t a -> m (t b)
+  traversalr :: Traversable t =>
+                 ( (b -> t b -> t b) -> a -> m (t b) -> m (t b) )
+                 -> (t b -> m (t b))
+                 -> t a -> m (t b)
 
 instance CTraversable [] where
-  data Builder [] a = ListBuilder ([a]->[a])
-  traversalL q p [] = 
+  traversalr cliftA2 cpure = foldr 
+  traversalr cliftA2 _ (x:xs) = cliftA2 (:) 
